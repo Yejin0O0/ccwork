@@ -11,11 +11,15 @@ node_modules/
 # Build output
 dist/
 dist-ssr/
+coverage/
 
 # Local env
 .env
 .env.local
 .env.*.local
+
+# Claude Code
+.claude/settings.local.json
 
 # Editor
 .vscode/*
