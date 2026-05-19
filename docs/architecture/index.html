@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Architecture — Notes App</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #242424;
+      border-bottom: 1px solid #333;
+      padding: 20px 40px;
+    }
+
+    header h1 { font-size: 20px; font-weight: 700; color: #fff; }
+    header p  { font-size: 13px; color: #888; margin-top: 4px; }
+
+    .tabs {
+      display: flex;
+      gap: 4px;
+      padding: 24px 40px 0;
+    }
+
+    .tab-btn {
+      padding: 8px 20px;
+      border-radius: 8px 8px 0 0;
+      border: 1px solid #333;
+      border-bottom: none;
+      background: #242424;
+      font-size: 13px;
+      font-weight: 500;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .tab-btn.active {
+      background: #2a2a2a;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .panel {
+      display: none;
+      background: #2a2a2a;
+      border: 1px solid #333;
+      border-radius: 0 12px 12px 12px;
+      margin: 0 40px 40px;
+      padding: 40px;
+      min-height: 500px;
+    }
+
+    .panel.active { display: block; }
+
+    .panel h2   { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 6px; }
+    .panel .desc { font-size: 13px; color: #888; margin-bottom: 32px; line-height: 1.6; }
+
+    .mermaid { display: flex; justify-content: center; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Notes App — Architecture</h1>
+  <p>컴포넌트 의존성 & 상태 흐름 다이어그램</p>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('dep')">컴포넌트 의존성</button>
+  <button class="tab-btn"        onclick="switchTab('state')">상태 흐름</button>
+</div>
+
+<!-- 컴포넌트 의존성 -->
+<div id="panel-dep" class="panel active">
+  <h2>컴포넌트 의존성</h2>
+  <p class="desc">파일 간 import 관계를 레이어(api / context / components / types)별로 구분합니다.</p>
+  <div class="mermaid">
+graph TD
+  subgraph Entry["Entry Point"]
+    main["main.tsx"]
+    App["App.tsx"]
+  end
+
+  subgraph CTX["context/"]
+    NotesProvider["NotesContext.tsx"]
+  end
+
+  subgraph COMP["components/"]
+    Layout["Layout.tsx"]
+    NoteList["NoteList.tsx"]
+    NoteItem["NoteItem.tsx"]
+    NoteEditor["NoteEditor.tsx"]
+  end
+
+  subgraph API["api/"]
+    notesApi["notes.ts"]
+  end
+
+  subgraph TYPES["types/"]
+    noteType["note.ts"]
+  end
+
+  subgraph EXT["External"]
+    JsonServer["JSON Server\nlocalhost:3001"]
+  end
+
+  main --> App
+  App --> NotesProvider
+  App --> Layout
+  App --> NoteList
+  App --> NoteEditor
+  NotesProvider --> notesApi
+  NotesProvider --> noteType
+  NoteList -->|useNotes| NotesProvider
+  NoteList --> NoteItem
+  NoteItem --> noteType
+  NoteEditor -->|useNotes| NotesProvider
+  notesApi --> noteType
+  notesApi --> JsonServer
+  </div>
+</div>
+
+<!-- 상태 흐름 -->
+<div id="panel-state" class="panel">
+  <h2>상태 흐름</h2>
+  <p class="desc">App 로컬 상태, NotesContext 전역 상태, NoteEditor 로컬 상태 간 데이터 흐름을 나타냅니다.</p>
+  <div class="mermaid">
+graph LR
+  subgraph APP["App - 로컬 상태"]
+    selId["selectedNoteId"]
+    isCreatingState["isCreating"]
+  end
+
+  subgraph CTX_STATE["NotesContext - 전역 상태"]
+    notesArr["notes 배열"]
+    loadingState["loading"]
+    errorState["error"]
+  end
+
+  subgraph COMP_VIEW["컴포넌트"]
+    NoteListC["NoteList"]
+    NoteEditorC["NoteEditor"]
+  end
+
+  subgraph EDITOR_STATE["NoteEditor - 로컬 상태"]
+    titleState["title"]
+    contentState["content"]
+    savingState["saving"]
+  end
+
+  selId -->|prop| NoteListC
+  selId -->|prop| NoteEditorC
+  isCreatingState -->|prop| NoteEditorC
+  notesArr -->|useNotes| NoteListC
+  notesArr -->|useNotes| NoteEditorC
+  NoteEditorC --> titleState
+  NoteEditorC --> contentState
+  savingState -->|createNote| notesArr
+  savingState -->|updateNote| notesArr
+  NoteListC -->|deleteNote| notesArr
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: false, theme: 'dark', securityLevel: 'loose' });
+
+  function renderPanel(name) {
+    const panel = document.getElementById('panel-' + name);
+    panel.querySelectorAll('.mermaid').forEach(el => {
+      el.removeAttribute('data-processed');
+      if (el.dataset.src) el.innerHTML = el.dataset.src;
+    });
+    mermaid.run({ nodes: panel.querySelectorAll('.mermaid') });
+  }
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach((b, i) => {
+      b.classList.toggle('active', ['dep', 'state'][i] === name);
+    });
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + name).classList.add('active');
+    renderPanel(name);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.mermaid').forEach(el => {
+      el.dataset.src = el.innerHTML;
+    });
+    renderPanel('dep');
+  });
+</script>
+</body>
+</html>
