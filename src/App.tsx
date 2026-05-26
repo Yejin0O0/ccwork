@@ -3,10 +3,12 @@ import { NotesProvider } from './context/NotesContext';
 import { Layout } from './components/Layout';
 import { NoteList } from './components/NoteList';
 import { NoteEditor } from './components/NoteEditor';
+import NoteSearch from './components/NoteSearch';
 
 function App() {
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleSelectNote = (id: string) => {
     setSelectedNoteId(id);
@@ -27,13 +29,18 @@ function App() {
     <NotesProvider>
       <Layout
         onNewNote={handleNewNote}
-        sidebar={<NoteList selectedNoteId={selectedNoteId} onSelect={handleSelectNote} />}
+        sidebar={
+          <>
+            <NoteSearch value={searchQuery} onChange={setSearchQuery} />
+            <NoteList
+              selectedNoteId={selectedNoteId}
+              onSelect={handleSelectNote}
+              searchQuery={searchQuery}
+            />
+          </>
+        }
         main={
-          <NoteEditor
-            selectedNoteId={selectedNoteId}
-            isCreating={isCreating}
-            onDone={handleDone}
-          />
+          <NoteEditor selectedNoteId={selectedNoteId} isCreating={isCreating} onDone={handleDone} />
         }
       />
     </NotesProvider>
