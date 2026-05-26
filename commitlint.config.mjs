@@ -18,7 +18,17 @@ export default {
     },
   ],
   rules: {
-    'subject-empty': [2, 'never'],   // 제목 필수
-    'body-min-lines': [2, 'always'], // 본문 최소 2줄
+    // 허용 타입 엄격하게 제한
+    'type-enum': [2, 'always', ['feat', 'fix', 'docs', 'chore', 'test', 'refactor', 'style', 'ci']],
+    // 제목 필수
+    'subject-empty': [2, 'never'],
+    // 제목 50자 이하
+    'subject-max-length': [2, 'always', 50],
+    // 제목 소문자 강제
+    'subject-case': [2, 'always', 'lower-case'],
+    // 마침표 금지
+    'subject-full-stop': [2, 'never', '.'],
+    // 본문 최소 2줄
+    'body-min-lines': [2, 'always'],
   },
 };
