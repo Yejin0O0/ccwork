@@ -129,6 +129,29 @@ NoteItem의 삭제 버튼 클릭 → `deleteNote(id)` 호출 → `api.deleteNote
 | 불리언 상태 / prop | `is` 접두사                   | `isCreating`, `isSelected`               |
 | Context 액션       | `create/update/delete` + 명사 | `createNote`, `updateNote`, `deleteNote` |
 
+## 디자인 시스템
+
+모든 스타일 작업은 **`/design-system` 스킬을 사용**한다.
+스킬이 자동으로 관련 디자인 시스템 파일을 읽고, 작업 후 위반 여부를 검사한다.
+
+`.tsx` / `.css` 파일 수정 시 hook이 자동으로 실행되어 디자인 시스템 준수 여부를 상기시킨다.
+
+| 파일                               | 내용                                  |
+| ---------------------------------- | ------------------------------------- |
+| `docs/design-system/index.md`      | 핵심 철학, 전체 Do/Don't              |
+| `docs/design-system/colors.md`     | 색상 토큰, Surface 계층, No-Line Rule |
+| `docs/design-system/typography.md` | 타입 스케일, 색상 조합                |
+| `docs/design-system/elevation.md`  | Tonal Layering, 그림자, Ghost Border  |
+| `docs/design-system/components.md` | 버튼, 카드, 인풋, Knowledge Token     |
+| `docs/design-system/spacing.md`    | 간격 스케일, 수직 리듬                |
+
+**핵심 원칙 요약**
+
+- 영역 구분은 `border` 대신 배경색 차이로
+- 그림자는 Tonal Layering으로 대체, 플로팅 요소에만 Ambient Shadow 허용
+- 액센트 컬러(`tertiary` #0053dc)는 CTA·포커스에만 사용
+- 리스트 구분선 금지 → `spacing.4` (1.4rem) 간격으로 대체
+
 ## 커밋 규칙
 
 커밋 시 Husky가 자동으로 두 가지를 검사한다.
