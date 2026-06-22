@@ -22,6 +22,7 @@ export interface Note {
 // src/hooks/useTagEditor.ts
 export function useTagEditor(initialTags: string[]): {
   tags: string[];
+  setTags: (tags: string[]) => void; // 추가. NoteEditor가 노트 전환 시 태그 동기화에 사용
   inputValue: string;
   setInputValue: (value: string) => void;
   addTag: (value: string) => void;
@@ -72,39 +73,42 @@ createNote: (title: string, content: string, tags: string[]) => Promise<void>;
 
 **useTagEditor**
 
-- [정상] useTagEditor — should return initialTags as tags when initialized with existing tags
-- [정상] addTag — should append tag to tags array when valid value is given
-- [정상] addTag — should normalize input to lowercase when uppercase letters are given
-- [정상] addTag — should clear inputValue after tag is successfully added
+- [x] [정상] useTagEditor — should return initialTags as tags when initialized with existing tags
+- [x] [정상] addTag — should append tag to tags array when valid value is given
+- [x] [정상] addTag — should normalize input to lowercase when uppercase letters are given
+- [x] [정상] addTag — should clear inputValue after tag is successfully added
 
 **TagInput**
 
-- [정상] TagInput — should render each tag as a chip element when tags prop is given
-- [정상] TagInput — should call onAdd with current inputValue when Enter key is pressed
-- [정상] TagInput — should call onAdd with value stripped of comma when comma is typed
-- [정상] TagInput — should call onInputChange when input value changes
+- [x] [정상] TagInput — should render each tag as a chip element when tags prop is given
+- [x] [정상] TagInput — should call onAdd with current inputValue when Enter key is pressed
+- [x] [정상] TagInput — should call onAdd with value stripped of comma when comma is typed
+- [x] [정상] TagInput — should call onInputChange when input value changes
 
 **NoteEditor 통합**
 
-- [정상] NoteEditor — should initialize useTagEditor with selectedNote.tags when a note is selected
-- [정상] NoteEditor — should initialize useTagEditor with empty array when creating new note
-- [정상] NoteEditor — should include tags in updateNote call when save is clicked
-- [정상] NoteEditor — should include tags in createNote call when save is clicked
-- [정상] NoteEditor — should restore saved tags as chips when same note is re-selected
-- [정상] NoteEditor — should include existing tags when only title or content is changed before save
+- [x] [정상] NoteEditor — should initialize useTagEditor with selectedNote.tags when a note is selected
+- [x] [정상] NoteEditor — should initialize useTagEditor with empty array when creating new note
+- [x] [정상] NoteEditor — should include tags in updateNote call when save is clicked
+- [x] [정상] NoteEditor — should include tags in createNote call when save is clicked
+- [x] [정상] NoteEditor — should restore saved tags as chips when same note is re-selected
+- [x] [정상] NoteEditor — should include existing tags when only title or content is changed before save
+- [x] [정상] NoteEditor — should render tag input placeholder when creating new note
+- [x] [정상] useTagEditor — should expose removeTag function in return value
 
 ### 경계
 
-- [경계] useTagEditor — should return empty array as tags when initialized with empty array
-- [경계] NoteEditor — should initialize useTagEditor with empty array when selectedNote has no tags field (구버전 노트)
-- [경계] addTag — should do nothing when input is empty string
-- [경계] addTag — should do nothing when input is whitespace only
-- [경계] TagInput — should render no chips when tags prop is empty array
+- [x] [경계] useTagEditor — should return empty array as tags when initialized with empty array
+- [x] [경계] NoteEditor — should initialize useTagEditor with empty array when selectedNote has no tags field (구버전 노트)
+- [x] [경계] addTag — should do nothing when input is empty string
+- [x] [경계] addTag — should do nothing when input is whitespace only
+- [x] [경계] TagInput — should render no chips when tags prop is empty array
+- [x] [경계] NoteEditor — should render zero chips when selectedNote has no tags field
 
 ### 예외
 
-- [예외] removeTag — should leave tags unchanged and not throw when index is out of bounds
-- [예외] NoteEditor — should keep tags state unchanged when save API call fails
+- [x] [예외] removeTag — should leave tags unchanged and not throw when index is out of bounds
+- [x] [예외] NoteEditor — should keep tags state unchanged when save API call fails
 
 ---
 
