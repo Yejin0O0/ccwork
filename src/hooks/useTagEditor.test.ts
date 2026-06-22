@@ -70,4 +70,9 @@ describe('removeTag', () => {
     }).not.toThrow();
     expect(result.current.tags).toEqual(['react']);
   });
+
+  it('should expose removeTag function in return value', () => {
+    const { result } = renderHook(() => useTagEditor([]));
+    expect(typeof result.current.removeTag).toBe('function');
+  });
 });

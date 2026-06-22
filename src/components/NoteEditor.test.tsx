@@ -103,6 +103,19 @@ describe('NoteEditor', () => {
     });
   });
 
+  it('should render tag input placeholder when creating new note', () => {
+    render(<NoteEditor selectedNoteId={null} isCreating={true} onDone={vi.fn()} />);
+    expect(screen.getByPlaceholderText('태그 입력 후 Enter')).toBeInTheDocument();
+  });
+
+  it('should render zero chips when selectedNote has no tags field', () => {
+    vi.mocked(NotesContext.useNotes).mockReturnValue(
+      createMockContext({ notes: [mockNoteWithoutTags as typeof mockNote] }),
+    );
+    render(<NoteEditor selectedNoteId="2" isCreating={false} onDone={vi.fn()} />);
+    expect(screen.queryAllByRole('listitem')).toHaveLength(0);
+  });
+
   it('should keep tags state unchanged when save API call fails', async () => {
     const updateNote = vi.fn().mockRejectedValue(new Error('서버 오류'));
     vi.mocked(NotesContext.useNotes).mockReturnValue(createMockContext({ updateNote }));
