@@ -56,16 +56,16 @@ const { tags, setTags, inputValue, setInputValue, addTag, removeTag } = useTagEd
 
 ### 정상
 
-- [ ] [정상] TagInput — should render a remove button for each tag chip when tags prop is given
-- [ ] [정상] TagInput — should call onRemove with correct index when remove button is clicked
-- [ ] [정상] NoteEditor — should remove tag chip immediately when remove button is clicked
-- [ ] [정상] NoteEditor — should save note without removed tag when save is clicked after removal
+- [x] [정상] TagInput — should render a remove button for each tag chip when tags prop is given
+- [x] [정상] TagInput — should call onRemove with correct index when remove button is clicked
+- [x] [정상] NoteEditor — should remove tag chip immediately when remove button is clicked
+- [x] [정상] NoteEditor — should save note without removed tag when save is clicked after removal
 
 ### 경계
 
-- [ ] [경계] TagInput — should render no remove buttons when tags array is empty
-- [ ] [경계] TagInput — should call onRemove with index 0 when the only tag's remove button is clicked
-- [ ] [경계] NoteEditor — should save with empty tags array when all chips are removed before saving
+- [x] [경계] TagInput — should render no remove buttons when tags array is empty
+- [x] [경계] TagInput — should call onRemove with index 0 when the only tag's remove button is clicked
+- [x] [경계] NoteEditor — should save with empty tags array when all chips are removed before saving
 
 ---
 

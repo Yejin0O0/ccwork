@@ -11,7 +11,7 @@ export default function TagInput({
   inputValue,
   onInputChange,
   onAdd,
-  onRemove: _onRemove,
+  onRemove,
 }: TagInputProps) {
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
@@ -22,22 +22,29 @@ export default function TagInput({
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
     if (value.endsWith(',')) {
-      handleCommaSeparator();
+      onAdd(inputValue);
     } else {
       onInputChange(value);
     }
   }
 
-  function handleCommaSeparator() {
-    onAdd(inputValue);
-  }
-
   return (
     <div className="flex flex-wrap gap-1.5 items-center border border-border rounded-xl px-3 py-2">
       <ul className="flex flex-wrap gap-1.5">
-        {tags.map((tag) => (
-          <li key={tag} className="bg-muted text-muted-foreground text-xs px-2 py-0.5 rounded-lg">
-            {tag}
+        {tags.map((tag, index) => (
+          <li
+            key={tag}
+            className="group flex items-center gap-1 bg-muted text-muted-foreground text-xs px-2 py-0.5 rounded-full"
+          >
+            <span>{tag}</span>
+            <button
+              type="button"
+              aria-label={`${tag} 삭제`}
+              onClick={() => onRemove(index)}
+              className="opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+            >
+              ×
+            </button>
           </li>
         ))}
       </ul>
