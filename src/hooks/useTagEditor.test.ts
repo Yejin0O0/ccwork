@@ -60,6 +60,77 @@ describe('addTag', () => {
   });
 });
 
+describe('addTag - validation', () => {
+  it('should add tag when input is exactly 15 characters', () => {
+    const { result } = renderHook(() => useTagEditor([]));
+    act(() => {
+      result.current.addTag('a'.repeat(15));
+    });
+    expect(result.current.tags).toContain('a'.repeat(15));
+  });
+
+  it('should add tag when input contains only allowed characters (lowercase, korean, number, hyphen)', () => {
+    const { result } = renderHook(() => useTagEditor([]));
+    act(() => {
+      result.current.addTag('react-태그1');
+    });
+    expect(result.current.tags).toContain('react-태그1');
+  });
+
+  it('should not add tag and set isShaking true when input is exactly 16 characters', () => {
+    const { result } = renderHook(() => useTagEditor([]));
+    act(() => {
+      result.current.addTag('a'.repeat(16));
+    });
+    expect(result.current.tags).toEqual([]);
+    expect(result.current.isShaking).toBe(true);
+  });
+
+  it('should not add tag and set isShaking true when input is a duplicate after normalization', () => {
+    const { result } = renderHook(() => useTagEditor(['react']));
+    act(() => {
+      result.current.addTag('React');
+    });
+    expect(result.current.tags).toEqual(['react']);
+    expect(result.current.isShaking).toBe(true);
+  });
+
+  it('should not add tag and set isShaking true when input exceeds 15 characters', () => {
+    const { result } = renderHook(() => useTagEditor([]));
+    act(() => {
+      result.current.addTag('a'.repeat(20));
+    });
+    expect(result.current.tags).toEqual([]);
+    expect(result.current.isShaking).toBe(true);
+  });
+
+  it('should not add tag and set isShaking true when input contains disallowed characters', () => {
+    const { result } = renderHook(() => useTagEditor([]));
+    act(() => {
+      result.current.addTag('react!!');
+    });
+    expect(result.current.tags).toEqual([]);
+    expect(result.current.isShaking).toBe(true);
+  });
+
+  it('should not add tag and set isShaking true when duplicate tag is entered', () => {
+    const { result } = renderHook(() => useTagEditor(['react']));
+    act(() => {
+      result.current.addTag('react');
+    });
+    expect(result.current.tags).toEqual(['react']);
+    expect(result.current.isShaking).toBe(true);
+  });
+
+  it('should not trigger shaking when input is empty string', () => {
+    const { result } = renderHook(() => useTagEditor(['react']));
+    act(() => {
+      result.current.addTag('');
+    });
+    expect(result.current.isShaking).toBe(false);
+  });
+});
+
 describe('removeTag', () => {
   it('should leave tags unchanged and not throw when index is out of bounds', () => {
     const { result } = renderHook(() => useTagEditor(['react']));

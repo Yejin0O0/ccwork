@@ -1,12 +1,26 @@
 import { useState } from 'react';
 
+const MAX_TAG_LENGTH = 15;
+const ALLOWED_PATTERN = /^[a-z0-9가-힣-]+$/;
+
 export function useTagEditor(initialTags: string[]) {
   const [tags, setTags] = useState(initialTags);
   const [inputValue, setInputValue] = useState('');
+  const [isShaking, setIsShaking] = useState(false);
 
   function addTag(value: string) {
     const normalized = value.trim().toLowerCase();
     if (!normalized) return;
+
+    if (
+      normalized.length > MAX_TAG_LENGTH ||
+      !ALLOWED_PATTERN.test(normalized) ||
+      tags.includes(normalized)
+    ) {
+      setIsShaking(true);
+      return;
+    }
+
     setTags((prev) => [...prev, normalized]);
     setInputValue('');
   }
@@ -16,5 +30,9 @@ export function useTagEditor(initialTags: string[]) {
     setTags((prev) => prev.filter((_, i) => i !== index));
   }
 
-  return { tags, setTags, inputValue, setInputValue, addTag, removeTag };
+  function resetShaking() {
+    setIsShaking(false);
+  }
+
+  return { tags, setTags, inputValue, setInputValue, addTag, removeTag, isShaking, resetShaking };
 }

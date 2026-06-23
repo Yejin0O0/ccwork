@@ -17,9 +17,8 @@ export function NoteEditor({ selectedNoteId, isCreating, onDone }: NoteEditorPro
 
   const selectedNote = notes.find((n) => n.id === selectedNoteId);
 
-  const { tags, setTags, inputValue, setInputValue, addTag, removeTag } = useTagEditor(
-    selectedNote?.tags ?? [],
-  );
+  const { tags, setTags, inputValue, setInputValue, addTag, removeTag, isShaking, resetShaking } =
+    useTagEditor(selectedNote?.tags ?? []);
 
   useEffect(() => {
     if (selectedNote) {
@@ -96,6 +95,8 @@ export function NoteEditor({ selectedNoteId, isCreating, onDone }: NoteEditorPro
           onInputChange={setInputValue}
           onAdd={addTag}
           onRemove={removeTag}
+          isShaking={isShaking}
+          onShakeEnd={resetShaking}
         />
       </div>
 
