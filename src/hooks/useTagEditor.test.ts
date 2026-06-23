@@ -131,6 +131,38 @@ describe('addTag - validation', () => {
   });
 });
 
+describe('isMaxed', () => {
+  const tenTags = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'];
+
+  it('should return isMaxed as false when initialized with fewer than 10 tags', () => {
+    const { result } = renderHook(() => useTagEditor(['react', 'typescript']));
+    expect(result.current.isMaxed).toBe(false);
+  });
+
+  it('should return isMaxed as true when tags count is exactly 10', () => {
+    const { result } = renderHook(() => useTagEditor(tenTags));
+    expect(result.current.isMaxed).toBe(true);
+  });
+
+  it('should return isMaxed as false when tags count is exactly 9', () => {
+    const { result } = renderHook(() => useTagEditor(tenTags));
+    expect(result.current.isMaxed).toBe(true);
+    act(() => {
+      result.current.removeTag(0);
+    });
+    expect(result.current.isMaxed).toBe(false);
+  });
+
+  it('should return isMaxed as false after removeTag brings count to 9', () => {
+    const { result } = renderHook(() => useTagEditor(tenTags));
+    expect(result.current.isMaxed).toBe(true);
+    act(() => {
+      result.current.removeTag(9);
+    });
+    expect(result.current.isMaxed).toBe(false);
+  });
+});
+
 describe('removeTag', () => {
   it('should leave tags unchanged and not throw when index is out of bounds', () => {
     const { result } = renderHook(() => useTagEditor(['react']));
