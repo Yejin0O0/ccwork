@@ -3,9 +3,16 @@ interface TagInputProps {
   inputValue: string;
   onInputChange: (value: string) => void;
   onAdd: (value: string) => void;
+  onRemove: (index: number) => void;
 }
 
-export default function TagInput({ tags, inputValue, onInputChange, onAdd }: TagInputProps) {
+export default function TagInput({
+  tags,
+  inputValue,
+  onInputChange,
+  onAdd,
+  onRemove: _onRemove,
+}: TagInputProps) {
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
       onAdd(inputValue);

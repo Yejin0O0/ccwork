@@ -17,7 +17,7 @@ export function NoteEditor({ selectedNoteId, isCreating, onDone }: NoteEditorPro
 
   const selectedNote = notes.find((n) => n.id === selectedNoteId);
 
-  const { tags, setTags, inputValue, setInputValue, addTag } = useTagEditor(
+  const { tags, setTags, inputValue, setInputValue, addTag, removeTag } = useTagEditor(
     selectedNote?.tags ?? [],
   );
 
@@ -66,7 +66,7 @@ export function NoteEditor({ selectedNoteId, isCreating, onDone }: NoteEditorPro
   }
 
   return (
-    <div className="bg-card rounded-3xl px-8 sm:px-12 py-8 shadow-[0_2px_12px_rgba(0,0,0,0.07)] border border-border max-w-2xl">
+    <div className="bg-card rounded-3xl px-8 sm:px-12 py-8 border border-border max-w-2xl">
       <p className="text-xs font-semibold tracking-widest uppercase text-muted-foreground mb-6">
         {isCreating ? '새 노트' : '노트 편집'}
       </p>
@@ -95,6 +95,7 @@ export function NoteEditor({ selectedNoteId, isCreating, onDone }: NoteEditorPro
           inputValue={inputValue}
           onInputChange={setInputValue}
           onAdd={addTag}
+          onRemove={removeTag}
         />
       </div>
 

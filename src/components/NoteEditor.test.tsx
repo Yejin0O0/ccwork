@@ -16,6 +16,15 @@ const mockNote = {
   updatedAt: '2024-01-01',
 };
 
+const mockNoteWithMultipleTags = {
+  id: '3',
+  title: '멀티 태그 노트',
+  content: '내용',
+  tags: ['react', 'typescript'],
+  createdAt: '2024-01-01',
+  updatedAt: '2024-01-01',
+};
+
 const mockNoteWithoutTags = {
   id: '2',
   title: '구버전 노트',
@@ -114,6 +123,47 @@ describe('NoteEditor', () => {
     );
     render(<NoteEditor selectedNoteId="2" isCreating={false} onDone={vi.fn()} />);
     expect(screen.queryAllByRole('listitem')).toHaveLength(0);
+  });
+
+  it('should remove tag chip immediately when remove button is clicked', async () => {
+    vi.mocked(NotesContext.useNotes).mockReturnValue(
+      createMockContext({ notes: [mockNoteWithMultipleTags] }),
+    );
+    const user = userEvent.setup();
+    render(<NoteEditor selectedNoteId="3" isCreating={false} onDone={vi.fn()} />);
+    expect(screen.getByText('react')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'react 삭제' }));
+    expect(screen.queryByText('react')).not.toBeInTheDocument();
+    expect(screen.getByText('typescript')).toBeInTheDocument();
+  });
+
+  it('should save note without removed tag when save is clicked after removal', async () => {
+    const updateNote = vi.fn();
+    vi.mocked(NotesContext.useNotes).mockReturnValue(
+      createMockContext({ notes: [mockNoteWithMultipleTags], updateNote }),
+    );
+    const user = userEvent.setup();
+    render(<NoteEditor selectedNoteId="3" isCreating={false} onDone={vi.fn()} />);
+    await user.click(screen.getByRole('button', { name: 'react 삭제' }));
+    await user.click(screen.getByText('저장'));
+    await waitFor(() => {
+      expect(updateNote).toHaveBeenCalledWith(
+        '3',
+        expect.objectContaining({ tags: ['typescript'] }),
+      );
+    });
+  });
+
+  it('should save with empty tags array when all chips are removed before saving', async () => {
+    const updateNote = vi.fn();
+    vi.mocked(NotesContext.useNotes).mockReturnValue(createMockContext({ updateNote }));
+    const user = userEvent.setup();
+    render(<NoteEditor selectedNoteId="1" isCreating={false} onDone={vi.fn()} />);
+    await user.click(screen.getByRole('button', { name: 'react 삭제' }));
+    await user.click(screen.getByText('저장'));
+    await waitFor(() => {
+      expect(updateNote).toHaveBeenCalledWith('1', expect.objectContaining({ tags: [] }));
+    });
   });
 
   it('should keep tags state unchanged when save API call fails', async () => {
