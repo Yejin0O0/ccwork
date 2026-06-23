@@ -4,6 +4,8 @@ interface TagInputProps {
   onInputChange: (value: string) => void;
   onAdd: (value: string) => void;
   onRemove: (index: number) => void;
+  isShaking?: boolean;
+  onShakeEnd?: () => void;
 }
 
 export default function TagInput({
@@ -12,6 +14,8 @@ export default function TagInput({
   onInputChange,
   onAdd,
   onRemove,
+  isShaking = false,
+  onShakeEnd = () => {},
 }: TagInputProps) {
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
@@ -53,7 +57,8 @@ export default function TagInput({
         value={inputValue}
         onChange={handleChange}
         onKeyDown={handleKeyDown}
-        className="text-sm bg-transparent outline-none flex-1 min-w-20 placeholder:text-muted-foreground/50"
+        onAnimationEnd={onShakeEnd}
+        className={`text-sm bg-transparent outline-none flex-1 min-w-20 placeholder:text-muted-foreground/50${isShaking ? ' animate-shake' : ''}`}
         placeholder="태그 입력 후 Enter"
       />
     </div>

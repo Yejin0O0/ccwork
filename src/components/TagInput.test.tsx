@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TagInput from './TagInput';
 
@@ -137,9 +137,43 @@ describe('TagInput', () => {
         onInputChange={vi.fn()}
         onAdd={vi.fn()}
         onRemove={onRemove}
+        isShaking={false}
+        onShakeEnd={vi.fn()}
       />,
     );
     await user.click(screen.getByRole('button', { name: /삭제/ }));
     expect(onRemove).toHaveBeenCalledWith(0);
+  });
+
+  it('should apply shake class to input when isShaking is true', () => {
+    render(
+      <TagInput
+        tags={[]}
+        inputValue=""
+        onInputChange={vi.fn()}
+        onAdd={vi.fn()}
+        onRemove={vi.fn()}
+        isShaking={true}
+        onShakeEnd={vi.fn()}
+      />,
+    );
+    expect(screen.getByRole('textbox')).toHaveClass('animate-shake');
+  });
+
+  it('should call onShakeEnd when animation ends on input', () => {
+    const onShakeEnd = vi.fn();
+    render(
+      <TagInput
+        tags={[]}
+        inputValue=""
+        onInputChange={vi.fn()}
+        onAdd={vi.fn()}
+        onRemove={vi.fn()}
+        isShaking={true}
+        onShakeEnd={onShakeEnd}
+      />,
+    );
+    fireEvent.animationEnd(screen.getByRole('textbox'));
+    expect(onShakeEnd).toHaveBeenCalled();
   });
 });
