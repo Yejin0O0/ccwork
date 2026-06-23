@@ -6,6 +6,7 @@ interface TagInputProps {
   onRemove: (index: number) => void;
   isShaking?: boolean;
   onShakeEnd?: () => void;
+  isMaxed?: boolean;
 }
 
 export default function TagInput({
@@ -16,6 +17,7 @@ export default function TagInput({
   onRemove,
   isShaking = false,
   onShakeEnd = () => {},
+  isMaxed = false,
 }: TagInputProps) {
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') {
@@ -58,9 +60,15 @@ export default function TagInput({
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         onAnimationEnd={onShakeEnd}
+        disabled={isMaxed}
         className={`text-sm bg-transparent outline-none flex-1 min-w-20 placeholder:text-muted-foreground/50${isShaking ? ' animate-shake' : ''}`}
         placeholder="태그 입력 후 Enter"
       />
+      {isMaxed && (
+        <p className="w-full text-xs text-muted-foreground mt-1">
+          태그는 최대 10개까지 추가할 수 있습니다
+        </p>
+      )}
     </div>
   );
 }

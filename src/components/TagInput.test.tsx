@@ -145,6 +145,96 @@ describe('TagInput', () => {
     expect(onRemove).toHaveBeenCalledWith(0);
   });
 
+  it('should disable input when isMaxed is true', () => {
+    render(
+      <TagInput
+        tags={[]}
+        inputValue=""
+        onInputChange={vi.fn()}
+        onAdd={vi.fn()}
+        onRemove={vi.fn()}
+        isMaxed={true}
+      />,
+    );
+    expect(screen.getByRole('textbox')).toBeDisabled();
+  });
+
+  it('should show max count message when isMaxed is true', () => {
+    render(
+      <TagInput
+        tags={[]}
+        inputValue=""
+        onInputChange={vi.fn()}
+        onAdd={vi.fn()}
+        onRemove={vi.fn()}
+        isMaxed={true}
+      />,
+    );
+    expect(screen.getByText('태그는 최대 10개까지 추가할 수 있습니다')).toBeInTheDocument();
+  });
+
+  it('should enable input when isMaxed is false', () => {
+    render(
+      <TagInput
+        tags={[]}
+        inputValue=""
+        onInputChange={vi.fn()}
+        onAdd={vi.fn()}
+        onRemove={vi.fn()}
+        isMaxed={false}
+      />,
+    );
+    expect(screen.getByRole('textbox')).not.toBeDisabled();
+  });
+
+  it('should not show max count message when isMaxed is false', () => {
+    render(
+      <TagInput
+        tags={[]}
+        inputValue=""
+        onInputChange={vi.fn()}
+        onAdd={vi.fn()}
+        onRemove={vi.fn()}
+        isMaxed={false}
+      />,
+    );
+    expect(screen.queryByText('태그는 최대 10개까지 추가할 수 있습니다')).not.toBeInTheDocument();
+  });
+
+  it('should not call onAdd when Enter is pressed while input is disabled', async () => {
+    const onAdd = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <TagInput
+        tags={[]}
+        inputValue="react"
+        onInputChange={vi.fn()}
+        onAdd={onAdd}
+        onRemove={vi.fn()}
+        isMaxed={true}
+      />,
+    );
+    await user.keyboard('{Enter}');
+    expect(onAdd).not.toHaveBeenCalled();
+  });
+
+  it('should not call onAdd when comma is typed while input is disabled', async () => {
+    const onAdd = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <TagInput
+        tags={[]}
+        inputValue="react"
+        onInputChange={vi.fn()}
+        onAdd={onAdd}
+        onRemove={vi.fn()}
+        isMaxed={true}
+      />,
+    );
+    await user.type(screen.getByRole('textbox'), ',');
+    expect(onAdd).not.toHaveBeenCalled();
+  });
+
   it('should apply shake class to input when isShaking is true', () => {
     render(
       <TagInput

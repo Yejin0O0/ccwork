@@ -1,6 +1,7 @@
 import { useState } from 'react';
 
 const MAX_TAG_LENGTH = 15;
+const MAX_TAG_COUNT = 10;
 const ALLOWED_PATTERN = /^[a-z0-9가-힣-]+$/;
 
 export function useTagEditor(initialTags: string[]) {
@@ -34,5 +35,15 @@ export function useTagEditor(initialTags: string[]) {
     setIsShaking(false);
   }
 
-  return { tags, setTags, inputValue, setInputValue, addTag, removeTag, isShaking, resetShaking };
+  return {
+    tags,
+    setTags,
+    inputValue,
+    setInputValue,
+    addTag,
+    removeTag,
+    isShaking,
+    resetShaking,
+    isMaxed: tags.length >= MAX_TAG_COUNT,
+  };
 }
