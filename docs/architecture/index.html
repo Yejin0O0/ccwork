@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>아키텍처 다이어그램 - Notes App</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #1a1a1a;
+      color: #e0e0e0;
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      padding: 24px 32px;
+      border-bottom: 1px solid #2e2e2e;
+      background: #111;
+    }
+    header h1 { font-size: 1.25rem; font-weight: 700; color: #fff; }
+    header p  { font-size: 0.82rem; color: #666; margin-top: 4px; }
+
+    .tabs {
+      display: flex;
+      padding: 0 32px;
+      border-bottom: 1px solid #2e2e2e;
+      background: #111;
+    }
+    .tab-btn {
+      padding: 14px 24px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: #777;
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .tab-btn.active { color: #a78bfa; border-bottom-color: #a78bfa; }
+    .tab-btn:hover:not(.active) { color: #bbb; }
+
+    .tab-panel { display: none; padding: 32px; }
+    .tab-panel.active { display: block; }
+
+    .diagram-desc {
+      font-size: 0.82rem;
+      color: #777;
+      margin-bottom: 20px;
+      line-height: 1.7;
+      max-width: 700px;
+    }
+    .diagram-desc code {
+      background: #2a2a2a;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 0.78rem;
+      color: #a78bfa;
+    }
+
+    .mermaid-wrap {
+      background: #0f0f0f;
+      border: 1px solid #2e2e2e;
+      border-radius: 12px;
+      padding: 40px 32px;
+      overflow-x: auto;
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mermaid { width: 100%; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>📝 Notes App — 아키텍처 다이어그램</h1>
+  <p>React 19 + TypeScript + Vite 기반 노트 CRUD 앱</p>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('dep')">컴포넌트 의존성</button>
+  <button class="tab-btn" onclick="switchTab('state')">상태 흐름</button>
+</div>
+
+<div id="panel-dep" class="tab-panel active">
+  <p class="diagram-desc">
+    각 파일의 <code>import</code> 관계를 레이어별로 시각화합니다.
+    화살표 방향은 <strong>A → B: A가 B를 import</strong>함을 나타냅니다.
+    외부 라이브러리(React 등)는 제외했습니다.
+  </p>
+  <div class="mermaid-wrap">
+    <div class="mermaid" id="diag-dep"></div>
+  </div>
+</div>
+
+<div id="panel-state" class="tab-panel">
+  <p class="diagram-desc">
+    상태를 <strong>소유</strong>한 곳과 <strong>소비</strong>하는 컴포넌트 간 데이터 흐름입니다.
+    엣지 레이블은 전달되는 props 또는 호출되는 액션을 나타냅니다.
+    <code>App</code>은 UI 상태, <code>NotesProvider</code>는 서버 데이터 상태를 소유합니다.
+  </p>
+  <div class="mermaid-wrap">
+    <div class="mermaid" id="diag-state"></div>
+  </div>
+</div>
+
+<script>
+  const DIAGRAMS = {
+    dep: `graph TD
+  subgraph typesLayer[타입 레이어]
+    NoteInterface[Note 인터페이스]
+  end
+
+  subgraph apiLayer[API 레이어]
+    ApiNotes[notes.ts - fetch 함수]
+  end
+
+  subgraph contextLayer[Context 레이어]
+    NotesCtx[NotesContext.tsx]
+  end
+
+  subgraph compLayer[컴포넌트 레이어]
+    LayoutComp[Layout.tsx]
+    NoteListComp[NoteList.tsx]
+    NoteItemComp[NoteItem.tsx]
+    NoteEditorComp[NoteEditor.tsx]
+  end
+
+  subgraph rootLayer[진입점]
+    MainEntry[main.tsx]
+    AppComp[App.tsx]
+  end
+
+  MainEntry --> AppComp
+  AppComp --> NotesCtx
+  AppComp --> LayoutComp
+  AppComp --> NoteListComp
+  AppComp --> NoteEditorComp
+  NotesCtx --> NoteInterface
+  NotesCtx --> ApiNotes
+  ApiNotes --> NoteInterface
+  NoteListComp --> NotesCtx
+  NoteListComp --> NoteItemComp
+  NoteItemComp --> NoteInterface
+  NoteEditorComp --> NotesCtx`,
+
+    state: `graph LR
+  subgraph appOwns[App - UI 상태 소유]
+    AppNode[App.tsx]
+  end
+
+  subgraph provOwns[NotesProvider - 서버 상태 소유]
+    ProvNode[NotesProvider]
+    JsonSrv[(JSON Server)]
+  end
+
+  subgraph compNodes[컴포넌트]
+    LayoutNode[Layout]
+    NoteListNode[NoteList]
+    NoteItemNode[NoteItem]
+    NoteEditorNode[NoteEditor]
+  end
+
+  AppNode -->|onNewNote| LayoutNode
+  AppNode -->|selectedNoteId, onSelect| NoteListNode
+  AppNode -->|selectedNoteId, isCreating, onDone| NoteEditorNode
+
+  ProvNode -->|notes, loading, error, deleteNote| NoteListNode
+  ProvNode -->|notes, createNote, updateNote| NoteEditorNode
+
+  NoteListNode -->|note, isSelected, onSelect, onDelete| NoteItemNode
+
+  NoteListNode -->|deleteNote 호출| ProvNode
+  NoteEditorNode -->|createNote / updateNote 호출| ProvNode
+
+  ProvNode <-->|REST API| JsonSrv`
+  };
+
+  mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+
+  async function renderDiagram(key) {
+    const el = document.getElementById('diag-' + key);
+    if (!el) return;
+    el.removeAttribute('data-processed');
+    el.textContent = DIAGRAMS[key];
+    try {
+      await mermaid.run({ nodes: [el] });
+    } catch (err) {
+      el.textContent = '렌더링 오류: ' + err.message;
+    }
+  }
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    const btn = document.querySelector('[onclick="switchTab(\'' + name + '\')"]');
+    const panel = document.getElementById('panel-' + name);
+    if (btn) btn.classList.add('active');
+    if (panel) panel.classList.add('active');
+    renderDiagram(name);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    renderDiagram('dep');
+  });
+</script>
+
+</body>
+</html>

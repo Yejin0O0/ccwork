@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/check-colors.mjs",
+            "statusMessage": "색상 하드코딩 검사 중..."
+          }
+        ]
+      }
+    ]
+  }
+}
