@@ -129,6 +129,25 @@ NoteItem의 삭제 버튼 클릭 → `deleteNote(id)` 호출 → `api.deleteNote
 | 불리언 상태 / prop | `is` 접두사                   | `isCreating`, `isSelected`               |
 | Context 액션       | `create/update/delete` + 명사 | `createNote`, `updateNote`, `deleteNote` |
 
+## TDD 이슈 사이클
+
+새 이슈 작업 시 다음 순서를 따른다:
+
+1. `/test-scenarios N` — 시그니처 + 시나리오 (skill)
+2. `/tdd-red N` — 실패 테스트 작성 (skill)
+3. `/tdd-green N` — 최소 구현, 테스트 전체 통과 (skill)
+4. AC 검증 — AC 충족 독립 검증, 테스트 통과 ≠ AC 충족
+5. `/tdd-refactor N` — 구조 개선, 깨지면 즉시 롤백 (skill)
+6. `/security-review N` — 타입·보안 점검 (skill)
+7. commit → PR `--base feature/<spec>` → squash merge → 이슈 클로즈
+
+**흐름 제어 규칙 (Claude가 따를 것)**
+
+- 각 단계 완료 후 다음 단계를 **제안**하되 승인 없이 자동으로 진행하지 않는다.
+- 사용자가 단계를 명시하지 않으면 현재 이슈의 진행 상태를 파악해 다음 단계를 안내한다.
+- 이슈 의존성이 있으면 선행 이슈가 머지된 feature 브랜치에서 분기한다.
+- 브랜치 생성 → 작업 → PR (`feature/<issue-branch>` → `feature/<spec>`) → squash merge → 로컬 브랜치 정리 순서를 유지한다.
+
 ## 디자인 시스템
 
 모든 스타일 작업은 **`/design-system` 스킬을 사용**한다.
