@@ -250,6 +250,56 @@ describe('TagInput', () => {
     expect(screen.getByRole('textbox')).toHaveClass('animate-shake');
   });
 
+  it('should NOT call onAdd when Enter is pressed with isComposing true', () => {
+    const onAdd = vi.fn();
+    render(
+      <TagInput
+        tags={[]}
+        inputValue="react"
+        onInputChange={vi.fn()}
+        onAdd={onAdd}
+        onRemove={vi.fn()}
+      />,
+    );
+    const input = screen.getByRole('textbox');
+    fireEvent.keyDown(input, { key: 'Enter', isComposing: true });
+    expect(onAdd).not.toHaveBeenCalled();
+  });
+
+  it('should call onAdd exactly once when IME fires two consecutive Enter keydowns', () => {
+    const onAdd = vi.fn();
+    render(
+      <TagInput
+        tags={[]}
+        inputValue="태그"
+        onInputChange={vi.fn()}
+        onAdd={onAdd}
+        onRemove={vi.fn()}
+      />,
+    );
+    const input = screen.getByRole('textbox');
+    fireEvent.keyDown(input, { key: 'Enter', isComposing: true });
+    fireEvent.keyDown(input, { key: 'Enter', isComposing: false });
+    expect(onAdd).toHaveBeenCalledTimes(1);
+    expect(onAdd).toHaveBeenCalledWith('태그');
+  });
+
+  it('should call onAdd with inputValue when Enter is pressed with isComposing false', () => {
+    const onAdd = vi.fn();
+    render(
+      <TagInput
+        tags={[]}
+        inputValue="react"
+        onInputChange={vi.fn()}
+        onAdd={onAdd}
+        onRemove={vi.fn()}
+      />,
+    );
+    const input = screen.getByRole('textbox');
+    fireEvent.keyDown(input, { key: 'Enter', isComposing: false });
+    expect(onAdd).toHaveBeenCalledWith('react');
+  });
+
   it('should call onShakeEnd when animation ends on input', () => {
     const onShakeEnd = vi.fn();
     render(
