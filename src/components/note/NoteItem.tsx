@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Note } from '../../types/note';
+import DeleteConfirmModal from './DeleteConfirmModal';
 
 interface NoteItemProps {
   note: Note;
@@ -17,6 +19,22 @@ export default function NoteItem({
   activeTag,
   onTagClick,
 }: NoteItemProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  function handleDeleteClick(e: React.MouseEvent) {
+    e.stopPropagation();
+    setIsModalOpen(true);
+  }
+
+  function handleConfirmDelete() {
+    onDelete(note.id);
+    setIsModalOpen(false);
+  }
+
+  function handleCancelDelete() {
+    setIsModalOpen(false);
+  }
+
   return (
     <div
       onClick={() => onSelect(note.id)}
@@ -29,10 +47,7 @@ export default function NoteItem({
           {note.title || '(제목 없음)'}
         </h3>
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(note.id);
-          }}
+          onClick={handleDeleteClick}
           className="text-muted-foreground hover:text-destructive text-xs shrink-0 transition-colors cursor-pointer"
         >
           삭제
@@ -64,6 +79,12 @@ export default function NoteItem({
           ))}
         </div>
       )}
+      <DeleteConfirmModal
+        isOpen={isModalOpen}
+        noteTitle={note.title}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   );
 }
