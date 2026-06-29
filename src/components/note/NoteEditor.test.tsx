@@ -1,9 +1,9 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { NoteEditor } from './NoteEditor';
-import * as NotesContext from '../context/NotesContext';
+import NoteEditor from './NoteEditor';
+import * as NotesContext from '../../context/NotesContext';
 
-vi.mock('../context/NotesContext', () => ({
+vi.mock('../../context/NotesContext', () => ({
   useNotes: vi.fn(),
 }));
 

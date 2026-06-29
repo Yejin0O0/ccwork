@@ -1,14 +1,19 @@
 import { useState } from 'react';
 import { NotesProvider } from './context/NotesContext';
-import { Layout } from './components/Layout';
-import { NoteList } from './components/NoteList';
-import { NoteEditor } from './components/NoteEditor';
-import NoteSearch from './components/NoteSearch';
+import Layout from './components/Layout';
+import NoteList from './components/note/NoteList';
+import NoteEditor from './components/note/NoteEditor';
+import NoteSearch from './components/note/NoteSearch';
 
 function App() {
   const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeTag, setActiveTag] = useState<string | null>(null);
+
+  const handleTagFilter = (tag: string) => {
+    setActiveTag((prev) => (prev === tag ? null : tag));
+  };
 
   const handleSelectNote = (id: string) => {
     setSelectedNoteId(id);
@@ -36,6 +41,8 @@ function App() {
               selectedNoteId={selectedNoteId}
               onSelect={handleSelectNote}
               searchQuery={searchQuery}
+              activeTag={activeTag}
+              onTagFilter={handleTagFilter}
             />
           </>
         }

@@ -6,11 +6,11 @@ interface LayoutProps {
   main: ReactNode;
 }
 
-export function Layout({ onNewNote, sidebar, main }: LayoutProps) {
+export default function Layout({ onNewNote, sidebar, main }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* 헤더 */}
-      <header className="bg-card border-b border-border px-6 py-4 flex items-center justify-between shadow-[0_1px_4px_rgba(0,0,0,0.06)]">
+      <header className="bg-card border-b border-border px-6 py-4 flex items-center justify-between">
         <h1
           className="text-2xl font-bold text-foreground"
           style={{ fontFamily: 'Boogaloo, sans-serif' }}
