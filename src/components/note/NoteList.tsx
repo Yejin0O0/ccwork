@@ -22,7 +22,7 @@ export default function NoteList({
       !searchQuery ||
       n.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       n.content.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesTag = !activeTag || n.tags.includes(activeTag);
+    const matchesTag = !activeTag || (n.tags ?? []).includes(activeTag);
     return matchesSearch && matchesTag;
   });
 

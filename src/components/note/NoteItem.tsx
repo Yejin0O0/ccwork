@@ -44,9 +44,9 @@ export default function NoteItem({
       <p className="text-[10px] text-muted-foreground/70 mt-2">
         {new Date(note.updatedAt).toLocaleDateString('ko-KR')}
       </p>
-      {note.tags.length > 0 && (
+      {(note.tags ?? []).length > 0 && (
         <div className="flex flex-wrap gap-1 mt-2">
-          {note.tags.map((tag) => (
+          {(note.tags ?? []).map((tag) => (
             <button
               key={tag}
               type="button"
