@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useNotes } from '../context/NotesContext';
-import { useTagEditor } from '../hooks/useTagEditor';
-import TagInput from './TagInput';
+import { useNotes } from '../../context/NotesContext';
+import { useTagEditor } from '../../hooks/useTagEditor';
+import TagInput from '../tag/TagInput';
 
 interface NoteEditorProps {
   selectedNoteId: string | null;
@@ -9,7 +9,7 @@ interface NoteEditorProps {
   onDone: () => void;
 }
 
-export function NoteEditor({ selectedNoteId, isCreating, onDone }: NoteEditorProps) {
+export default function NoteEditor({ selectedNoteId, isCreating, onDone }: NoteEditorProps) {
   const { notes, createNote, updateNote } = useNotes();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');

@@ -1,20 +1,27 @@
-import { Note } from '../types/note';
+import { Note } from '../../types/note';
 
 interface NoteItemProps {
   note: Note;
   isSelected: boolean;
   onSelect: (id: string) => void;
   onDelete: (id: string) => void;
+  activeTag: string | null;
+  onTagClick: (tag: string) => void;
 }
 
-export function NoteItem({ note, isSelected, onSelect, onDelete }: NoteItemProps) {
+export default function NoteItem({
+  note,
+  isSelected,
+  onSelect,
+  onDelete,
+  activeTag,
+  onTagClick,
+}: NoteItemProps) {
   return (
     <div
       onClick={() => onSelect(note.id)}
       className={`bg-card rounded-2xl p-4 border cursor-pointer transition-all ${
-        isSelected
-          ? 'border-foreground shadow-[0_2px_12px_rgba(0,0,0,0.12)]'
-          : 'border-border hover:shadow-[0_2px_8px_rgba(0,0,0,0.07)]'
+        isSelected ? 'border-foreground' : 'border-border'
       }`}
     >
       <div className="flex items-start justify-between gap-2">
@@ -37,6 +44,26 @@ export function NoteItem({ note, isSelected, onSelect, onDelete }: NoteItemProps
       <p className="text-[10px] text-muted-foreground/70 mt-2">
         {new Date(note.updatedAt).toLocaleDateString('ko-KR')}
       </p>
+      {note.tags.length > 0 && (
+        <div className="flex flex-wrap gap-1 mt-2">
+          {note.tags.map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              aria-pressed={tag === activeTag}
+              onClick={(e) => {
+                e.stopPropagation();
+                onTagClick(tag);
+              }}
+              className={`text-xs px-2 py-0.5 rounded-full ${
+                tag === activeTag ? 'bg-foreground text-card' : 'bg-muted text-muted-foreground'
+              }`}
+            >
+              {tag}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
